@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "users")
@@ -25,10 +26,8 @@ public class User {
     @Size(min = 8)
     @JsonIgnore
     private String password;
-    @NotEmpty(message = "Roles should not be empty")
-    @Size(min = 1, max = 3)
     @JsonProperty("roles")
-    private List<String> roles;
+    private List<String> roles = null;
 
     public User(){}
 
@@ -71,7 +70,14 @@ public class User {
     }
 
     public void setRole(String role) {
-        if(role.equals("ADMIN") || role.equals("USER") || role.equals("PROBE"))
-            this.roles.add(role);
+        if(this.roles != null){
+            if(role.equals("ADMIN") || role.equals("USER") || role.equals("PROBE"))
+                this.roles.add(role);
+        }
+        else{
+            this.roles = new ArrayList<String>();
+            if(role.equals("ADMIN") || role.equals("USER") || role.equals("PROBE"))
+                this.roles.add(role);
+        }
     }
 }

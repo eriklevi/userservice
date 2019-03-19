@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface UsersService {
     void addUser(User user, HttpServletResponse response);
+    void addAdmin(User user, HttpServletResponse response);
+    void addSniffer(User user, HttpServletResponse response);
     List<User> getUsers(HttpServletResponse response);
     User getUserById(String id, HttpServletResponse response);
     void deleteUser(String id, HttpServletResponse response);

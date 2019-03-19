@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -25,11 +26,10 @@ public class UsersController {
     public void createUser(@RequestBody @Valid User user, HttpServletResponse response){
         usersService.addUser(user, response);
     }
-
     @PreAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(value = "", method = RequestMethod.GET)
     public @ResponseBody
-    List<User> getUsers(HttpServletResponse response){
+    List<User> getUsers(HttpServletResponse response, Principal principal){
         return usersService.getUsers(response);
     }
 

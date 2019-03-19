@@ -8,6 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +33,45 @@ public class UsersServiceImpl implements UsersService {
             newUser.setMail(user.getMail());
             newUser.setUsername(user.getUsername());
             newUser.setPassword(passwordEncoder.encode(user.getPassword()));
-            newUser.setRoles(user.getRoles());
+            newUser.setRole("USER");
+            usersRepository.save(newUser);
+            response.setStatus(200);
+        }
+        else{
+            response.setStatus(400);
+        }
+    }
+
+    @Override
+    public void addAdmin(User user, HttpServletResponse response) {
+        if(!usersRepository.existsByUsername(user.getUsername())){
+            User newUser = new User();
+            newUser.setMail(user.getMail());
+            newUser.setUsername(user.getUsername());
+            newUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            List<String> newRoles = new ArrayList<>();
+            newRoles.add("USER");
+            newRoles.add("SNIFFER");
+            newRoles.add("ADMIN");
+            newUser.setRoles(newRoles);
+            usersRepository.save(newUser);
+            response.setStatus(200);
+        }
+        else{
+            response.setStatus(400);
+        }
+    }
+
+    @Override
+    public void addSniffer(User user, HttpServletResponse response) {
+        if(!usersRepository.existsByUsername(user.getUsername())){
+            User newUser = new User();
+            newUser.setMail(user.getMail());
+            newUser.setUsername(user.getUsername());
+            newUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            List<String> newRoles = new ArrayList<>();
+            newRoles.add("SNIFFER");
+            newUser.setRoles(newRoles);
             usersRepository.save(newUser);
             response.setStatus(200);
         }
