@@ -28,7 +28,10 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public void addUser(User user, HttpServletResponse response) {
         //Check if the user already exists
-        if(!usersRepository.existsByUsername(user.getUsername())){
+        if(usersRepository.existsByUsername(user.getUsername()) || usersRepository.existsByMail(user.getMail())){
+            response.setStatus(400);
+        }
+        else{
             User newUser = new User();
             newUser.setMail(user.getMail());
             newUser.setUsername(user.getUsername());
@@ -37,14 +40,14 @@ public class UsersServiceImpl implements UsersService {
             usersRepository.save(newUser);
             response.setStatus(200);
         }
-        else{
-            response.setStatus(400);
-        }
     }
 
     @Override
     public void addAdmin(User user, HttpServletResponse response) {
-        if(!usersRepository.existsByUsername(user.getUsername())){
+        if(usersRepository.existsByUsername(user.getUsername()) || usersRepository.existsByMail(user.getMail())){
+            response.setStatus(400);
+        }
+        else{
             User newUser = new User();
             newUser.setMail(user.getMail());
             newUser.setUsername(user.getUsername());
@@ -57,14 +60,14 @@ public class UsersServiceImpl implements UsersService {
             usersRepository.save(newUser);
             response.setStatus(200);
         }
-        else{
-            response.setStatus(400);
-        }
     }
 
     @Override
     public void addSniffer(User user, HttpServletResponse response) {
-        if(!usersRepository.existsByUsername(user.getUsername())){
+        if(usersRepository.existsByUsername(user.getUsername()) || usersRepository.existsByMail(user.getMail())){
+            response.setStatus(400);
+        }
+        else{
             User newUser = new User();
             newUser.setMail(user.getMail());
             newUser.setUsername(user.getUsername());
@@ -74,9 +77,6 @@ public class UsersServiceImpl implements UsersService {
             newUser.setRoles(newRoles);
             usersRepository.save(newUser);
             response.setStatus(200);
-        }
-        else{
-            response.setStatus(400);
         }
     }
 
@@ -118,19 +118,21 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public void updateUserByUsername(User user, String username, HttpServletResponse response, Principal principal) {
-        if(principal.getName().equals(username)){
-            response.setStatus(400);
-        } else{
+        if(principal.getName().equals(username) && principal.getName().equals(user.getUsername())){
             Optional<User> optionalUser = usersRepository.findByUsername(username);
             if(optionalUser.isPresent()){
                 User u = optionalUser.get();
-                u.setMail(user.getMail());
-                u.setPassword(passwordEncoder.encode(user.getPassword()));
+                if(user.getMail() != null)
+                    u.setMail(user.getMail());
+                if(user.getPassword() != null)
+                    u.setPassword(passwordEncoder.encode(user.getPassword()));
                 usersRepository.save(u);
                 response.setStatus(200);
             } else{
                 response.setStatus(400);
             }
+        } else{
+            response.setStatus(400);
         }
     }
 

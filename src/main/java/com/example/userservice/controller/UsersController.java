@@ -5,14 +5,13 @@ import com.example.userservice.entity.User;
 import com.example.userservice.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.security.Principal;
 
 @RestController
-@Validated
 @RequestMapping("/users")
 public class UsersController {
 
@@ -32,7 +31,7 @@ public class UsersController {
 
     @PreAuthorize("hasAuthority('USER')")
     @RequestMapping(value = "/{username}", method = RequestMethod.PUT)
-    public void updateUser(@PathVariable String username,@RequestBody User user, HttpServletResponse response, Principal principal){
+    public void updateUser(@PathVariable String username, @RequestBody @Valid User user, HttpServletResponse response, Principal principal){
         usersService.updateUserByUsername(user,username, response, principal);
     }
 
