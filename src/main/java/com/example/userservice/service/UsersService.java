@@ -4,6 +4,7 @@ package com.example.userservice.service;
 import com.example.userservice.entity.User;
 
 import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
 import java.util.List;
 
 public interface UsersService {
@@ -11,7 +12,8 @@ public interface UsersService {
     void addAdmin(User user, HttpServletResponse response);
     void addSniffer(User user, HttpServletResponse response);
     List<User> getUsers(HttpServletResponse response);
-    User getUserById(String id, HttpServletResponse response);
-    void deleteUser(String id, HttpServletResponse response);
-    void updateUserById(User user, String id, HttpServletResponse response);
+    User getUser(String username, HttpServletResponse response, Principal principal);
+    void deleteUser(String username, HttpServletResponse response, Principal principal);
+    void updateUserByUsername(User user, String username, HttpServletResponse response, Principal principal);
+    void restrictedUpdateUserByUsername(User user, String username, HttpServletResponse response);
 }

@@ -87,28 +87,69 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public User getUserById(String id, HttpServletResponse response) {
-        Optional<User> user = usersRepository.findById(id);
-        if(user.isPresent()){
-            response.setStatus(200);
-            return user.get();
+    public User getUser(String username, HttpServletResponse response, Principal principal) {
+        if(principal.getName().equals(username)){
+            Optional<User> user = usersRepository.findByUsername(username);
+            if(user.isPresent()){
+                response.setStatus(200);
+                return user.get();
+            } else{
+                response.setStatus(400);
+                return null;
+            }
         } else{
-            response.setStatus(400);
+            response.setStatus(403);
             return null;
         }
     }
 
     @Override
-    public void deleteUser(String id, HttpServletResponse response) {
-        usersRepository.deleteById(id);
-        response.setStatus(200);
+    public void deleteUser(String username, HttpServletResponse response, Principal principal) {
+        if(principal.getName().equals(username)){
+            response.setStatus(400);
+        } else{
+            Long result = usersRepository.deleteByUsername(username);
+            if(result == 1)
+                response.setStatus(200);
+            else
+                response.setStatus(400);
+        }
     }
 
     @Override
-    public void updateUserById(User user, String id, HttpServletResponse response) {
-        if(usersRepository.existsById(id) && user.getId().equals(id)){
-            usersRepository.save(user);
-            response.setStatus(200);
+    public void updateUserByUsername(User user, String username, HttpServletResponse response, Principal principal) {
+        if(principal.getName().equals(username)){
+            response.setStatus(400);
+        } else{
+            Optional<User> optionalUser = usersRepository.findByUsername(username);
+            if(optionalUser.isPresent()){
+                User u = optionalUser.get();
+                u.setMail(user.getMail());
+                u.setPassword(passwordEncoder.encode(user.getPassword()));
+                usersRepository.save(u);
+                response.setStatus(200);
+            } else{
+                response.setStatus(400);
+            }
+        }
+    }
+
+    @Override
+    public void restrictedUpdateUserByUsername(User user, String username, HttpServletResponse response) {
+        Optional<User> optionalUser = usersRepository.findByUsername(username);
+        if(optionalUser.isPresent()){
+            User u = optionalUser.get();
+            if(usersRepository.existsByUsername(user.getUsername()) || usersRepository.existsByMail(user.getMail()))
+                response.setStatus(400);
+            else{
+                u.setMail(user.getMail());
+                u.setUsername(user.getUsername());
+                u.setPassword(passwordEncoder.encode(user.getPassword()));
+                if(user.getRoles() != null && user.getRoles().size() > 0)
+                    u.setRoles(user.getRoles());
+                usersRepository.save(u);
+                response.setStatus(200);
+            }
         }
         else{
             response.setStatus(400);
