@@ -1,7 +1,9 @@
 package com.example.userservice.service;
 
 
+import com.example.userservice.entity.Sniffer;
 import com.example.userservice.entity.User;
+import com.example.userservice.repository.SnifferRepository;
 import com.example.userservice.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,11 +20,13 @@ public class UsersServiceImpl implements UsersService {
 
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SnifferRepository snifferRepository;
 
     @Autowired
-    public UsersServiceImpl(UsersRepository usersRepository, PasswordEncoder passwordEncoder) {
+    public UsersServiceImpl(UsersRepository usersRepository, PasswordEncoder passwordEncoder, SnifferRepository snifferRepository) {
         this.usersRepository = usersRepository;
         this.passwordEncoder = passwordEncoder;
+        this.snifferRepository = snifferRepository;
     }
 
     @Override
@@ -63,19 +67,18 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public void addSniffer(User user, HttpServletResponse response) {
-        if(usersRepository.existsByUsername(user.getUsername()) || usersRepository.existsByMail(user.getMail())){
+    public void addSniffer(Sniffer sniffer, HttpServletResponse response) {
+        if(usersRepository.existsByUsername(sniffer.getUsername())){
             response.setStatus(400);
         }
         else{
-            User newUser = new User();
-            newUser.setMail(user.getMail());
-            newUser.setUsername(user.getUsername());
-            newUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            Sniffer newSniffer = new Sniffer();
+            newSniffer.setUsername(sniffer.getUsername());
+            newSniffer.setPassword(passwordEncoder.encode(sniffer.getPassword()));
             List<String> newRoles = new ArrayList<>();
             newRoles.add("SNIFFER");
-            newUser.setRoles(newRoles);
-            usersRepository.save(newUser);
+            newSniffer.setRoles(newRoles);
+            snifferRepository.save(newSniffer);
             response.setStatus(200);
         }
     }
@@ -99,6 +102,18 @@ public class UsersServiceImpl implements UsersService {
             }
         } else{
             response.setStatus(403);
+            return null;
+        }
+    }
+
+    @Override
+    public User getUser(String username, HttpServletResponse response) {
+        Optional<User> user = usersRepository.findByUsername(username);
+        if(user.isPresent()){
+            response.setStatus(200);
+            return user.get();
+        } else{
+            response.setStatus(400);
             return null;
         }
     }

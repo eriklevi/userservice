@@ -1,5 +1,6 @@
 package com.example.userservice.controller;
 
+import com.example.userservice.entity.Sniffer;
 import com.example.userservice.entity.User;
 import com.example.userservice.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class RestrictedUserController {
     }
 
     @RequestMapping(value = "/sniffers", method = RequestMethod.POST)
-    public void createSniffer(@RequestBody @Valid User user, HttpServletResponse response){
+    public void createSniffer(@RequestBody Sniffer user, HttpServletResponse response){
         usersService.addSniffer(user, response);
     }
 
@@ -53,5 +54,10 @@ public class RestrictedUserController {
     @RequestMapping(value = "users/{username}", method = RequestMethod.DELETE)
     public void deleteUser(@PathVariable @NotNull String username, HttpServletResponse response, Principal principal){
         usersService.deleteUser(username, response, principal);
+    }
+
+    @RequestMapping(value = "users/{username}", method = RequestMethod.GET)
+    public User getUser(@PathVariable @NotNull String username, HttpServletResponse response){
+        return usersService.getUser(username, response);
     }
 }
