@@ -35,6 +35,11 @@ public class RestrictedUserController {
         usersService.addSniffer(user, response);
     }
 
+    @RequestMapping(value = "/sniffers", method = RequestMethod.GET)
+    public List<Sniffer> getSnifferAsUsers(){
+        return usersService.getSniffersAsUsers();
+    }
+
     @RequestMapping(value = "/users", method = RequestMethod.POST)
     public void createUser(@RequestBody @Valid User user, HttpServletResponse response){
         usersService.addUser(user, response);

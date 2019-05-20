@@ -14,6 +14,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UsersServiceImpl implements UsersService {
@@ -171,5 +172,23 @@ public class UsersServiceImpl implements UsersService {
         else{
             response.setStatus(400);
         }
+    }
+
+    @Override
+    public List<Sniffer> getSniffersAsUsers() {
+        return usersRepository.findAll()
+                .stream()
+                .filter( user -> {
+                    return user.getRoles().size() == 1 && user.getRoles().contains("SNIFFER");
+                })
+                .map(user -> {
+                    Sniffer s = new Sniffer();
+                    s.setId(user.getId());
+                    s.setUsername(user.getUsername());
+                    s.setPassword(user.getPassword());
+                    s.setRoles(user.getRoles());
+                    return s;
+                })
+                .collect(Collectors.toList());
     }
 }

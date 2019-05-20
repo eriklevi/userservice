@@ -18,4 +18,5 @@ public interface UsersService {
     void deleteUser(String username, HttpServletResponse response, Principal principal);
     void updateUserByUsername(User user, String username, HttpServletResponse response, Principal principal);
     void restrictedUpdateUserByUsername(User user, String username, HttpServletResponse response);
+    List<Sniffer> getSniffersAsUsers();
 }
