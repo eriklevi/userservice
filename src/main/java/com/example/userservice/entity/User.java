@@ -1,5 +1,6 @@
 package com.example.userservice.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -9,6 +10,7 @@ public class User extends Base{
     @NotEmpty(message = "Email should not be empty")
     @Email
     @JsonProperty("mail")
+    @Indexed(unique = true)
     private String mail;
 
     public User(){

@@ -51,18 +51,18 @@ public class RestrictedUserController {
         return usersService.getUsers(response);
     }
 
-    @RequestMapping(value = "users/{username}", method = RequestMethod.PUT)
-    public void updateUserByUsername(@RequestBody @Valid User user, @PathVariable String username, HttpServletResponse response){
-        usersService.restrictedUpdateUserByUsername(user, username, response);
+    @RequestMapping(value = "/users/{id}", method = RequestMethod.PUT)
+    public void updateUserByUsername(@RequestBody @Valid User user, @PathVariable String id, HttpServletResponse response){
+        usersService.restrictedUpdateUserById(user, id, response);
     }
 
-    @RequestMapping(value = "users/{username}", method = RequestMethod.DELETE)
-    public void deleteUser(@PathVariable @NotNull String username, HttpServletResponse response, Principal principal){
-        usersService.deleteUser(username, response, principal);
+    @RequestMapping(value = "/users/{id}", method = RequestMethod.DELETE)
+    public void deleteUser(@PathVariable @NotNull String id, HttpServletResponse response, Principal principal){
+        usersService.deleteUser(id, response, principal);
     }
 
-    @RequestMapping(value = "users/{username}", method = RequestMethod.GET)
-    public User getUser(@PathVariable @NotNull String username, HttpServletResponse response){
-        return usersService.getUser(username, response);
+    @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
+    public User getUser(@PathVariable @NotNull String id, HttpServletResponse response){
+        return usersService.getUser(id, response);
     }
 }

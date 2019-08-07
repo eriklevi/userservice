@@ -108,11 +108,11 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public User getUser(String username, HttpServletResponse response) {
-        Optional<User> user = usersRepository.findByUsername(username);
-        if(user.isPresent()){
+    public User getUser(String id, HttpServletResponse response) {
+        Optional<User> optionalUser = usersRepository.findById(id);
+        if(optionalUser.isPresent()){
             response.setStatus(200);
-            return user.get();
+            return optionalUser.get();
         } else{
             response.setStatus(400);
             return null;
@@ -120,15 +120,17 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public void deleteUser(String username, HttpServletResponse response, Principal principal) {
-        if(principal.getName().equals(username)){
-            response.setStatus(400);
-        } else{
-            Long result = usersRepository.deleteByUsername(username);
-            if(result == 1)
-                response.setStatus(200);
-            else
+    public void deleteUser(String id, HttpServletResponse response, Principal principal) {
+        Optional<User> optionalUser = usersRepository.findById(id);
+        if(optionalUser.isPresent()){
+            if(principal.getName().equals(optionalUser.get().getUsername())){
                 response.setStatus(400);
+            } else{
+                usersRepository.deleteById(id);
+                response.setStatus(200);
+            }
+        } else {
+            response.setStatus(400);
         }
     }
 
@@ -153,10 +155,12 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public void restrictedUpdateUserByUsername(User user, String username, HttpServletResponse response) {
-        Optional<User> optionalUser = usersRepository.findByUsername(username);
+    public void restrictedUpdateUserById(User user, String id, HttpServletResponse response) {
+        Optional<User> optionalUser = usersRepository.findById(id);
         if(optionalUser.isPresent()){
             User u = optionalUser.get();
+            //we check if there is already a user with that username or mail, anyway, the unique index should
+            //avoid issues
             if(usersRepository.existsByUsername(user.getUsername()) || usersRepository.existsByMail(user.getMail()))
                 response.setStatus(400);
             else{

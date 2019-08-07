@@ -3,6 +3,7 @@ package com.example.userservice.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotEmpty;
@@ -16,6 +17,7 @@ public class Base {
     private String id;
     @NotEmpty(message = "Username should not be empty")
     @JsonProperty("username")
+    @Indexed(unique = true)
     private String username;
     @NotEmpty(message = "Password should not be empty")
     @Size(min = 8)
