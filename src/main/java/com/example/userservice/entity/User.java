@@ -10,7 +10,6 @@ public class User extends Base{
     @NotEmpty(message = "Email should not be empty")
     @Email
     @JsonProperty("mail")
-    @Indexed(unique = true)
     private String mail;
 
     public User(){
